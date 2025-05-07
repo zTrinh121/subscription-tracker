@@ -2,7 +2,7 @@ import { Router } from 'express';
 
 const userRoutes = Router();
 
-userRoutes.get('/users', (req, res) => {
+userRoutes.get('/', (req, res) => {
     res.send({ title: 'GET all users'})
 })
 
