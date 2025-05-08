@@ -6,9 +6,12 @@ console.log('PORT:', process.env.PORT);
 
 export const {
     PORT,
+    SERVER_URL,
     NODE_ENV,
     DB_URI,
     JWT_SECRET,
     JWT_EXPIRES_IN,
     ARCJET_KEY,
-    ARCJET_ENV } = process.env;
+    ARCJET_ENV,
+    QSTASH_TOKEN,
+    QSTASH_URL} = process.env;

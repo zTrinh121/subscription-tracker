@@ -6,6 +6,7 @@ import { PORT } from "./config/env.js";
 import userRoutes from "./routes/user.routes.js";
 import subscriptionRoutes from "./routes/subscription.routes.js";
 import authRoutes from "./routes/auth.routes.js";
+import workflowRoutes from "./routes/workflow.route.js";
 import connectToDatabase from "./mongodb.js";
 import errorMiddleware from "./middlewares/error.middleware.js";
 import arcjetMiddleware from "./middlewares/arcjet.middleware.js";
@@ -21,6 +22,7 @@ app.use(arcjetMiddleware)
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/users', userRoutes);
 app.use('/api/v1/subscription', subscriptionRoutes);
+app.use('/api/v1/workflows', workflowRoutes);
 
 app.use(errorMiddleware);
 
