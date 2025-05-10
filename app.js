@@ -15,6 +15,8 @@ import arcjetMiddleware from "./middlewares/arcjet.middleware.js";
 
 
 const app = express();
+const require = createRequire(import.meta.url);
+const swaggerAssets = require('swagger-ui-dist').absolutePath();
 
 const options = {
     definition: {
@@ -53,6 +55,7 @@ app.use(cookieParser())
 app.use(arcjetMiddleware)
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
+app.use('/api-docs/assets', express.static(swaggerAssets));
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/users', userRoutes);
 app.use('/api/v1/subscription', subscriptionRoutes);
