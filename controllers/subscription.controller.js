@@ -12,8 +12,8 @@ export const createSubscription = async (req, res, next) => {
             user: req.user._id,
         }], { session });
 
-        const { workflowId } = await workflowClient.trigger({
-            url: `${SERVER_URL}api/v1/workflows/subscription/reminder`,
+        const { workflowRunId } = await workflowClient.trigger({
+            url: `${SERVER_URL}/api/v1/workflows/subscription/reminder`,
             body: {
                 subscriptionId: subscription.id,
             },
@@ -23,17 +23,12 @@ export const createSubscription = async (req, res, next) => {
             retries: 0
         });
 
-        console.log('Workflow trigger response:', workflowId);
-        console.log(`${SERVER_URL}api/v1/workflows/subscription/reminder`);
-
-        if (!workflowId) throw new Error("Workflow trigger failed");
-
         await session.commitTransaction();
         session.endSession();
 
         res.status(201).json({
             success: true,
-            data: { subscription, workflowId },
+            data: { subscription, workflowRunId },
         });
 
     } catch (error) {
