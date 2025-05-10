@@ -46,16 +46,13 @@ const options = {
 };
 
 const specs = swaggerJsdoc(options);
-const { _files, paths } = swaggerJsdoc(options);
-console.log('Scanned files:', _files);
-console.log('Detected paths:', Object.keys(paths || {}));
 
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
 app.use(cookieParser())
 app.use(arcjetMiddleware)
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/users', userRoutes);
 app.use('/api/v1/subscription', subscriptionRoutes);
