@@ -17,7 +17,7 @@ import {createRequire} from "module";
 
 const app = express();
 const require = createRequire(import.meta.url);
-const swaggerAssets = require('swagger-ui-dist').absolutePath();
+const swaggerAssets = require('swagger-ui-dist').getAbsoluteFSPath();
 
 const options = {
     definition: {
@@ -47,7 +47,6 @@ const options = {
     },
     apis: ['./routes/*.js']
 };
-
 const specs = swaggerJsdoc(options);
 
 app.use(express.json());
@@ -55,7 +54,20 @@ app.use(express.urlencoded({extended: false}));
 app.use(cookieParser())
 app.use(arcjetMiddleware)
 
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
+app.use('/api-docs', express.static(swaggerAssets, {
+    setHeaders: (res) => {
+        res.setHeader('Content-Type', 'text/css');
+    }
+}));
+app.use('/api-docs', swaggerUi.serveFiles(specs, {}), (req, res) => {
+    res.send(swaggerUi.generateHTML(specs));
+});
+app.use('/api-docs', (req, res, next) => {
+    if (req.path.endsWith('.css')) {
+        res.type('text/css');
+    }
+    next();
+});
 app.use('/api-docs/assets', express.static(swaggerAssets));
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/users', userRoutes);
