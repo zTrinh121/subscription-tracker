@@ -6,21 +6,119 @@ const userRoutes = Router();
 
 /**
  * @swagger
+ * components:
+ *   schemas:
+ *     User:
+ *       type: object
+ *       properties:
+ *         _id:
+ *           type: string
+ *           example: "507f1f77bcf86cd799439011"
+ *         name:
+ *           type: string
+ *           example: "John Doe"
+ *         email:
+ *           type: string
+ *           format: email
+ *           example: "john@example.com"
+ *         createdAt:
+ *           type: string
+ *           format: date-time
+ *           example: "2023-05-15T10:00:00Z"
+ *         updatedAt:
+ *           type: string
+ *           format: date-time
+ *           example: "2023-05-15T10:00:00Z"
+ *     UsersListResponse:
+ *       type: object
+ *       properties:
+ *         success:
+ *           type: boolean
+ *           example: true
+ *         data:
+ *           type: array
+ *           items:
+ *             $ref: '#/components/schemas/User'
+ *
+ * @swagger
  * /users:
  *   get:
  *     summary: Get all users
+ *     description: Retrieves a list of all registered users (excluding sensitive data like passwords)
  *     tags: [Users]
  *     responses:
  *       200:
- *         description: List of users
+ *         description: Successfully retrieved users list
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/UsersListResponse'
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "Failed to fetch users"
  */
 userRoutes.get('/', getUsers);
 
 /**
  * @swagger
+ * components:
+ *   schemas:
+ *     UserResponse:
+ *       type: object
+ *       properties:
+ *         success:
+ *           type: boolean
+ *           example: true
+ *         data:
+ *           type: object
+ *           properties:
+ *             _id:
+ *               type: string
+ *               example: "507f1f77bcf86cd799439011"
+ *             name:
+ *               type: string
+ *               example: "John Doe"
+ *             email:
+ *               type: string
+ *               example: "john@example.com"
+ *             createdAt:
+ *               type: string
+ *               format: date-time
+ *               example: "2023-05-15T10:00:00Z"
+ *             updatedAt:
+ *               type: string
+ *               format: date-time
+ *               example: "2023-05-15T10:00:00Z"
+ *     ErrorResponse:
+ *       type: object
+ *       properties:
+ *         success:
+ *           type: boolean
+ *           example: false
+ *         message:
+ *           type: string
+ *           example: "User not found"
+ *         statusCode:
+ *           type: integer
+ *           example: 404
+ *
+ * @swagger
  * /users/{id}:
  *   get:
- *     summary: Get user by ID
+ *     summary: Get user details by ID
+ *     description: |
+ *       Retrieves user information excluding sensitive data like password.
+ *       Requires valid JWT authentication.
  *     tags: [Users]
  *     security:
  *       - bearerAuth: []
@@ -30,14 +128,48 @@ userRoutes.get('/', getUsers);
  *         required: true
  *         schema:
  *           type: string
- *         description: User ID
+ *           pattern: '^[0-9a-fA-F]{24}$'
+ *         example: "507f1f77bcf86cd799439011"
+ *         description: Valid MongoDB ObjectId of the user
  *     responses:
  *       200:
- *         description: The user data
+ *         description: Successfully retrieved user data
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/UserResponse'
  *       401:
- *         description: Unauthorized
+ *         description: Unauthorized - Missing or invalid JWT token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "Not authorized"
  *       404:
  *         description: User not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "Server error"
  */
 userRoutes.get('/:id', authMiddleware, getUser);
 
@@ -58,8 +190,6 @@ userRoutes.get('/:id', authMiddleware, getUser);
  *       required: true
  *       content:
  *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/UserInput'
  *     responses:
  *       201:
  *         description: User created
@@ -85,8 +215,6 @@ userRoutes.post('/:id', (req, res) => {
  *       required: true
  *       content:
  *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/UserInput'
  *     responses:
  *       200:
  *         description: User updated

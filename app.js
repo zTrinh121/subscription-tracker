@@ -54,7 +54,7 @@ app.use(express.json());
 app.use(express.urlencoded({extended: false}));
 app.use(cookieParser())
 app.use(arcjetMiddleware)
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs, { customCssUrl: CSS_URL }));
+app.use('/', swaggerUi.serve, swaggerUi.setup(specs, { customCssUrl: CSS_URL }));
 // app.use('/api-docs/assets', express.static(swaggerAssets));
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/users', userRoutes);
@@ -62,10 +62,6 @@ app.use('/api/v1/subscription', subscriptionRoutes);
 app.use('/api/v1/workflows', workflowRoutes);
 
 app.use(errorMiddleware);
-
-app.get('/', (req, res) => {
-    res.send('Please go to /api-docs for more info');
-})
 
 app.listen(PORT, async () => {
     console.log(`Server is running on port ${PORT}`);
